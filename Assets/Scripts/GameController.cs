@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class GameController : MonoBehaviour
 {
@@ -15,8 +16,8 @@ public class GameController : MonoBehaviour
     public Text LastHitText;
 
     public Player player;
-    public List<Infantry> friendlyInfantryList;
-    public List<Infantry> enemyInfantryList;
+    public List<GameObject> friendlyObjectList;
+    public List<GameObject> enemyObjectList;
 
     private const int numOfSpawnCreep = 3;
 
@@ -28,8 +29,8 @@ public class GameController : MonoBehaviour
         {
             cam = Camera.main;
         }
-        friendlyInfantryList = new List<Infantry>();
-        enemyInfantryList = new List<Infantry>();
+        friendlyObjectList = new List<GameObject>();
+        enemyObjectList = new List<GameObject>();
 
         StartCoroutine(Spawn());
         UpdateText();
@@ -44,6 +45,30 @@ public class GameController : MonoBehaviour
             timeLeft = 0;
         }
         UpdateText();
+        foreach(GameObject friend in friendlyObjectList)
+        {
+            Dictionary<GameObject, int> friendAggroMap = friend.GetComponent<Infantry>().AggroMap;
+            foreach(GameObject enemy in enemyObjectList)
+            {
+                Dictionary<GameObject, int> enemyAggroMap = enemy.GetComponent<Infantry>().AggroMap;
+                if (!friendAggroMap.ContainsKey(enemy))
+                {
+                    int initAggro = Mathf.RoundToInt(Mathf.Abs((enemy.gameObject.transform.position - friend.gameObject.transform.position).magnitude));
+                    friendAggroMap[enemy] = initAggro;
+                    enemyAggroMap[friend] = initAggro;
+                }
+            }
+        }
+        foreach(GameObject friend in friendlyObjectList)
+        {
+            Infantry friendInfantry = friend.GetComponent<Infantry>();
+            friendInfantry.targetEnemy = friendInfantry.AggroMap.FirstOrDefault(x => x.Value == friendInfantry.AggroMap.Values.Max()).Key;
+        }
+        foreach(GameObject enemy in enemyObjectList)
+        {
+            Infantry enemyInfantry = enemy.GetComponent<Infantry>();
+            enemyInfantry.targetEnemy = enemyInfantry.AggroMap.FirstOrDefault(x => x.Value == enemyInfantry.AggroMap.Values.Max()).Key;
+        }
     }
 
     private void UpdateText()
@@ -89,10 +114,10 @@ public class GameController : MonoBehaviour
         {
             //Spawn Friendly Creep
             Vector2 pos = new Vector2(Infantry.xLimit, Random.Range(-Infantry.yLimit, Infantry.yLimit));
-            friendlyInfantryList.Add(SpawnSingleCreep(pos, 1));
+            friendlyObjectList.Add(SpawnSingleCreep(pos, 1).gameObject);
             //Spawn Enemy Creep
             pos = new Vector2(-Infantry.xLimit, Random.Range(-Infantry.yLimit, Infantry.yLimit));
-            friendlyInfantryList.Add(SpawnSingleCreep(pos, 2));
+            enemyObjectList.Add(SpawnSingleCreep(pos, 2).gameObject);
         }
         yield return new WaitForSeconds(30);
     }

@@ -25,7 +25,8 @@ public class PhysicsObject : MonoBehaviour
     private const float minDistance = 0.5f;
     private const float shellRadius = 0.01f;
 
-    public GameObject targetEnemy; //We track the position of the enemy by its rigid body
+    public GameObject targetEnemy; 
+    public Dictionary<GameObject, int> AggroMap { get; set; } //TODO: Find a more efficient way to get enemy with largest aggro
 
     private static float objectWidth;
     private static float objectHeight;
@@ -33,12 +34,13 @@ public class PhysicsObject : MonoBehaviour
     public static float xLimit;
     public static float yLimit;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (!myCam)
         {
             myCam = Camera.main;
         }
+        AggroMap = new Dictionary<GameObject, int>();
         Vector2 upperCorner = new Vector2(Screen.width, Screen.height);
         Vector2 targetUpperCorner = myCam.ScreenToWorldPoint(upperCorner);
         myRenderer = GetComponent<SpriteRenderer>();
@@ -170,7 +172,7 @@ public class PhysicsObject : MonoBehaviour
 
         return velocity;
     }
-    private IEnumerator Die()
+    protected virtual IEnumerator Die()
     {
         myAnimator.SetBool("isDead", true);
         myAnimator.SetBool("isAttacking", false);

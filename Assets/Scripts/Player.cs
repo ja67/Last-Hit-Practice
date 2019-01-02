@@ -23,11 +23,25 @@ public class Player : PhysicsObject
     }
     protected override void Attack()
     {
-        float afterAttackHp = targetEnemy.GetComponent<PhysicsObject>().healthPoint -= 10;
+        Infantry targetCreep = targetEnemy.GetComponent<PhysicsObject>() as Infantry;
+        float afterAttackHp = targetCreep.healthPoint -= 10;
         if (afterAttackHp <= 0f)
         {
             targetEnemy = null;
             myAnimator.SetBool("isAttacking", false);
+        }
+        else
+        {
+            // TODO: Create a defaultdict?
+            if (targetCreep.AggroMap.ContainsKey(this.gameObject))
+            {
+                targetCreep.AggroMap[this.gameObject] += 1;
+            }
+            else
+            {
+                targetCreep.AggroMap[this.gameObject] = 1;
+
+            }
         }
     }
 }
