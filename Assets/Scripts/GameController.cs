@@ -1,23 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public class GameController : MonoBehaviour
 {
 
-    public Camera cam;
+    [HideInInspector] public Camera cam;
     public GameObject infrantry;
 
-    public float timeLeft;
-    public Text timerText;
-    public int lastHitCount;
-    public Text LastHitText;
+    [HideInInspector] public float timeLeft;
+    [HideInInspector] public Text timerText;
+    [HideInInspector] public int lastHitCount;
+    [HideInInspector] public Text LastHitText;
 
     public Player player;
-    public List<GameObject> friendlyObjectList;
-    public List<GameObject> enemyObjectList;
+    [HideInInspector] public List<GameObject> friendlyObjectList;
+    [HideInInspector] public List<GameObject> enemyObjectList;
 
     private const int numOfSpawnCreep = 3;
 
@@ -45,10 +45,10 @@ public class GameController : MonoBehaviour
             timeLeft = 0;
         }
         UpdateText();
-        foreach(GameObject friend in friendlyObjectList)
+        foreach (GameObject friend in friendlyObjectList)
         {
             Dictionary<GameObject, int> friendAggroMap = friend.GetComponent<Infantry>().AggroMap;
-            foreach(GameObject enemy in enemyObjectList)
+            foreach (GameObject enemy in enemyObjectList)
             {
                 Dictionary<GameObject, int> enemyAggroMap = enemy.GetComponent<Infantry>().AggroMap;
                 if (!friendAggroMap.ContainsKey(enemy))
@@ -59,12 +59,12 @@ public class GameController : MonoBehaviour
                 }
             }
         }
-        foreach(GameObject friend in friendlyObjectList)
+        foreach (GameObject friend in friendlyObjectList)
         {
             Infantry friendInfantry = friend.GetComponent<Infantry>();
             friendInfantry.targetEnemy = friendInfantry.AggroMap.FirstOrDefault(x => x.Value == friendInfantry.AggroMap.Values.Max()).Key;
         }
-        foreach(GameObject enemy in enemyObjectList)
+        foreach (GameObject enemy in enemyObjectList)
         {
             Infantry enemyInfantry = enemy.GetComponent<Infantry>();
             enemyInfantry.targetEnemy = enemyInfantry.AggroMap.FirstOrDefault(x => x.Value == enemyInfantry.AggroMap.Values.Max()).Key;
