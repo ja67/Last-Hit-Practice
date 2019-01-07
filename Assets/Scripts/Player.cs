@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Player : PhysicsObject
 {
-    public override void Start()
+    protected override void Awake()
     {
-        speed = 2f;
+        base.Awake();
+        moveSpeed = 2f;
         maxHealthPoint = 10000000f;
         healthPoint = maxHealthPoint;
         targetEnemy = null;
-        base.Start();
+        attackFrequency = 0.5f;
     }
 
     // Update is called once per frame
@@ -21,25 +22,24 @@ public class Player : PhysicsObject
             targetPosition = targetEnemy.GetComponent<Rigidbody2D>().position;
         }
     }
-    protected override void Attack()
+    protected override void AttackAction()
     {
         Infantry targetCreep = targetEnemy.GetComponent<PhysicsObject>() as Infantry;
         float afterAttackHp = targetCreep.healthPoint -= 10;
         if (afterAttackHp <= 0f)
         {
             targetEnemy = null;
-            myAnimator.SetBool("isAttacking", false);
         }
         else
         {
             // TODO: Create a defaultdict?
-            if (targetCreep.AggroMap.ContainsKey(this.gameObject))
+            if (targetCreep.AggroMap.ContainsKey(gameObject))
             {
-                targetCreep.AggroMap[this.gameObject] += 1;
+                targetCreep.AggroMap[gameObject] += 1;
             }
             else
             {
-                targetCreep.AggroMap[this.gameObject] = 1;
+                targetCreep.AggroMap[gameObject] = 1;
 
             }
         }

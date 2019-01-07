@@ -5,6 +5,7 @@ using UnityEngine;
 public class Infantry : PhysicsObject
 {
     private int teamId;
+    [HideInInspector]
     public int TeamId
     {
         get
@@ -36,7 +37,7 @@ public class Infantry : PhysicsObject
     // Use this for initialization
     new void Start()
     {
-        speed = 2f;
+        moveSpeed = 2f;
         maxHealthPoint = 100f;
         healthPoint = maxHealthPoint;
         base.Start();
