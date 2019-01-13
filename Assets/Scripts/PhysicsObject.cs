@@ -30,8 +30,8 @@ public class PhysicsObject : MonoBehaviour
     [HideInInspector] public GameObject targetEnemy;
     [HideInInspector] public Dictionary<GameObject, int> AggroMap { get; set; } //TODO: Find a more efficient way to get enemy with largest aggro
 
-    private static float objectWidth;
-    private static float objectHeight;
+    protected static float objectWidth;
+    protected static float objectHeight;
 
     [HideInInspector] public static float xLimit;
     [HideInInspector] public static float yLimit;
@@ -67,7 +67,7 @@ public class PhysicsObject : MonoBehaviour
 
     }
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         currentPosition = myRigidbody2D.position;
 
