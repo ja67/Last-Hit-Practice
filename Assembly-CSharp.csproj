@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\PhysicsObject.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\Restart.cs" />
+    <Compile Include="Assets\Scripts\SoundManager.cs" />
     <Reference Include="Unity.Entities.Properties">
       <HintPath>D:/Unity Project/Last Hit Practice/Library/ScriptAssemblies/Unity.Entities.Properties.dll</HintPath>
     </Reference>
