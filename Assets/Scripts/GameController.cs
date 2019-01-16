@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
 {
 
     [HideInInspector] public Camera cam;
+    public SoundManager SoundManager;
     public GameObject infrantry;
 
     [HideInInspector] public float timeLeft;
@@ -23,6 +24,11 @@ public class GameController : MonoBehaviour
 
 
     // Use this for initialization
+
+    private void Awake()
+    {
+        player.gameController = this; 
+    }
     void Start()
     {
         if (cam == null)
