@@ -11,7 +11,7 @@ public class PhysicsObject : MonoBehaviour
     [HideInInspector] public float attackDuration;
     protected float maxHealthPoint;
 
-    public GameController gameController;
+    [HideInInspector] public GameController gameController;
     protected Animator myAnimator;
     protected Rigidbody2D myRigidbody2D;
     protected SpriteRenderer myRenderer;
@@ -38,6 +38,7 @@ public class PhysicsObject : MonoBehaviour
 
     protected virtual void Awake()
     {
+        gameController = GameController.instance;
         if (!myCam)
         {
             myCam = Camera.main;
