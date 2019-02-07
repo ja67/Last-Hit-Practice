@@ -9,7 +9,8 @@ public class GameController : MonoBehaviour
 
     [HideInInspector] public Camera cam;
     public SoundManager SoundManager;
-    public GameObject infrantry;
+    public GameObject infantry;
+    public static GameController instance;
 
     [HideInInspector] public float timeLeft;
     [HideInInspector] public Text timerText;
@@ -27,7 +28,17 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        player.gameController = this; 
+        //Check if there is already an instance of SoundManager
+        if (instance == null)
+            //if not, set it to this.
+            instance = this;
+        //If instance already exists:
+        else if (instance != this)
+            //Destroy this, this enforces our singleton pattern so there can only be one instance of SoundManager.
+            Destroy(gameObject);
+
+        //Set SoundManager to DontDestroyOnLoad so that it won't be destroyed when reloading our scene.
+        DontDestroyOnLoad(gameObject);
     }
     void Start()
     {
@@ -85,10 +96,9 @@ public class GameController : MonoBehaviour
 
     Infantry SpawnSingleCreep(Vector3 spawnPosition, int teamId)
     {
-        GameObject newInfantryObj = Instantiate(infrantry, spawnPosition, Quaternion.identity);
+        GameObject newInfantryObj = Instantiate(infantry, spawnPosition, Quaternion.identity);
         Infantry newInfantry = newInfantryObj.GetComponent<Infantry>() as Infantry;
         newInfantry.TeamId = teamId;
-        newInfantry.gameController = this;
         return newInfantry;
 
     }
