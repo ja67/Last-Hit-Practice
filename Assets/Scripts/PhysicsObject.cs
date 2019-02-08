@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using LastHitPractice;
+
 public class PhysicsObject : MonoBehaviour
 {
 

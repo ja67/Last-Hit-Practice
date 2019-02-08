@@ -1,0 +1,13 @@
+﻿{
+	"Language":"语言",
+	"Chinese": "中文",
+	"English": "English",
+	"Music": "音乐",
+	"Sound": "音效",
+	"Help": "帮助",
+	"Restart": "重新开始",
+	"Quit": "退出",
+	"GameOver": "游戏结束",
+	"TimeText": "剩余时间",
+	"Hit": "补刀数"
+}
