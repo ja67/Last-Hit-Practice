@@ -1,13 +1,13 @@
 ﻿{
 	"Language": "Language",
-	"Chinese": "中文",
-	"English": "English",
-	"Music": "Music",
-	"Sound": "Sound",
-	"Help": "Help",
-	"Restart": "Restart",
-	"Quit": "Quit",
+	"zh-CN": "中文",
+	"en-US": "English",
+	"MusicController": "Music",
+	"SoundController": "Sound",
+	"HelpButton": "Help",
+	"RestartButton": "Restart",
+	"QuitButton": "Quit",
 	"GameOver": "Game Over",
-	"TimeText": "Time left",
+	"Timer": "Time left",
 	"Hit": "Hit"
 }

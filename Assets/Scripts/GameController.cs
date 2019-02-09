@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,9 +17,7 @@ namespace LastHitPractice
         public static GameController instance;
 
         [HideInInspector] public float timeLeft;
-        [HideInInspector] public Text timerText;
         [HideInInspector] public int lastHitCount;
-        [HideInInspector] public Text LastHitText;
 
         public Player player;
         [HideInInspector] public List<GameObject> friendlyObjectList;
@@ -28,6 +27,15 @@ namespace LastHitPractice
 
         private const int numOfSpawnCreep = 3;
 
+        public Text GameOverText;
+        public Text HitText;
+        public Text TimerText;
+        public Text LanguageText;
+        public Text MusicControllerText;
+        public Text SoundControllerText;
+        public Text HelpButtonText;
+        public Text RestartButtonText;
+        public Text QuitButtonText;
 
         // Use this for initialization
 
@@ -57,6 +65,7 @@ namespace LastHitPractice
 
             StartCoroutine(Spawn());
             UpdateText();
+
         }
 
         // Update is called once physics timestamp
@@ -67,7 +76,7 @@ namespace LastHitPractice
             {
                 timeLeft = 0;
             }
-            UpdateText();
+            UpdateDynamicText();
             foreach (GameObject friend in friendlyObjectList)
             {
                 Dictionary<GameObject, int> friendAggroMap = friend.GetComponent<Infantry>().AggroMap;
@@ -96,7 +105,21 @@ namespace LastHitPractice
 
         private void UpdateText()
         {
-                timerText.text = i18n.__("TimeText") + Mathf.RoundToInt(timeLeft);
+            Text[] textArray = {
+                GameOverText, HitText, LanguageText,
+                MusicControllerText, SoundControllerText,
+                HelpButtonText, RestartButtonText, QuitButtonText
+            };
+            foreach(Text text in textArray)
+            {
+                text.text = i18n.__(Regex.Replace(text.name, "( |Text$)", string.Empty));
+            }
+            TimerText.text = i18n.__("Timer") + Mathf.RoundToInt(timeLeft);
+        }
+
+        private void UpdateDynamicText()
+        {
+                TimerText.text = i18n.__("Timer") + Mathf.RoundToInt(timeLeft);
         }
 
 
