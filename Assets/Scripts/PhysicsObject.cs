@@ -190,7 +190,7 @@ public class PhysicsObject : MonoBehaviour
         float attackMoment = 1f / attackFrequency;
         if (attackDuration > attackMoment)
         {
-            gameController.SoundManager.efxSource.Play();
+            gameController.SoundManager.soundSource.Play();
             myAnimator.PlayInFixedTime("Attack", -1, 1f / attackFrequency);
             AttackAction();
             attackDuration = 0f;

@@ -10,7 +10,6 @@ namespace LastHitPractice
 {
     public class GameController : MonoBehaviour
     {
-
         [HideInInspector] public Camera cam;
         [HideInInspector] public SoundManager SoundManager;
         public GameObject infantry;
@@ -27,6 +26,14 @@ namespace LastHitPractice
 
         private const int numOfSpawnCreep = 3;
 
+        public Slider MusicControllerSlider;
+        public Button MusicMuteButton;
+        public Slider SoundControllerSlider;
+        public Button SoundMuteButton;
+
+        public Sprite MuteSprite;
+        public Sprite UnmuteSprite;
+
         public Text GameOverText;
         public Text HitText;
         public Text TimerText;
@@ -36,6 +43,7 @@ namespace LastHitPractice
         public Text HelpButtonText;
         public Text RestartButtonText;
         public Text QuitButtonText;
+
 
         // Use this for initialization
 
@@ -62,10 +70,20 @@ namespace LastHitPractice
             friendlyObjectList = new List<GameObject>();
             enemyObjectList = new List<GameObject>();
             i18n = I18n.Instance;
-
+            InitMusicSoundController();
             StartCoroutine(Spawn());
             UpdateText();
 
+        }
+
+        private void InitMusicSoundController()
+        {
+            MusicControllerSlider.value = 1f;
+            SoundControllerSlider.value = 1f;
+            MusicControllerSlider.onValueChanged.AddListener(delegate { MusicSoundSliderHandler(SoundManager.Controller.Music, MusicControllerSlider.value); });
+            SoundControllerSlider.onValueChanged.AddListener(delegate { MusicSoundSliderHandler(SoundManager.Controller.Sound,SoundControllerSlider.value); });
+            MusicMuteButton.onClick.AddListener(delegate { MusicSoundMuteButtonHandler(SoundManager.Controller.Music); });
+            SoundMuteButton.onClick.AddListener(delegate { MusicSoundMuteButtonHandler(SoundManager.Controller.Sound); });
         }
 
         // Update is called once physics timestamp
@@ -165,6 +183,47 @@ namespace LastHitPractice
                 enemyObjectList.Add(SpawnSingleCreep(pos, 2).gameObject);
             }
             yield return new WaitForSeconds(30);
+        }
+
+        public void MusicSoundSliderHandler(SoundManager.Controller controller, float value)
+        {
+            if(controller == SoundManager.Controller.Music)
+            {
+                SoundManager.musicSource.volume = value; 
+            }
+            else if(controller == SoundManager.Controller.Sound)
+            {
+                SoundManager.soundSource.volume = value; 
+            }
+        }
+
+        public void MusicSoundMuteButtonHandler(SoundManager.Controller controller)
+        {
+            AudioSource source = null;
+            Slider volumeSlider = null;
+            Button muteButton = null;
+            if(controller == SoundManager.Controller.Music)
+            {
+                source = SoundManager.musicSource;
+                volumeSlider = MusicControllerSlider;
+                muteButton = MusicMuteButton;
+            }
+            else if(controller == SoundManager.Controller.Sound)
+            {
+                source = SoundManager.soundSource; 
+                volumeSlider = SoundControllerSlider;
+                muteButton = SoundMuteButton;
+            }
+            source.mute = !source.mute;
+            volumeSlider.interactable = !source.mute;
+            if (source.mute)
+            {
+                muteButton.image.sprite = MuteSprite;
+            }
+            else
+            {
+                muteButton.image.sprite = UnmuteSprite;
+            }
         }
     }
 }
