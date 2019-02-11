@@ -26,6 +26,10 @@ namespace LastHitPractice
 
         private const int numOfSpawnCreep = 3;
 
+        public Text CurrentLanguageText;
+        public Button PrevLanguageButton;
+        public Button NextLanguageButton;
+
         public Slider MusicControllerSlider;
         public Button MusicMuteButton;
         public Slider SoundControllerSlider;
@@ -70,10 +74,11 @@ namespace LastHitPractice
             friendlyObjectList = new List<GameObject>();
             enemyObjectList = new List<GameObject>();
             i18n = I18n.Instance;
+            InitLanguageController();
             InitMusicSoundController();
             StartCoroutine(Spawn());
             UpdateText();
-
+            CurrentLanguageText.text = i18n.__(I18n.CurrentLocale);
         }
 
         private void InitMusicSoundController()
@@ -84,6 +89,12 @@ namespace LastHitPractice
             SoundControllerSlider.onValueChanged.AddListener(delegate { MusicSoundSliderHandler(SoundManager.Controller.Sound,SoundControllerSlider.value); });
             MusicMuteButton.onClick.AddListener(delegate { MusicSoundMuteButtonHandler(SoundManager.Controller.Music); });
             SoundMuteButton.onClick.AddListener(delegate { MusicSoundMuteButtonHandler(SoundManager.Controller.Sound); });
+        }
+
+        private void InitLanguageController()
+        {
+            PrevLanguageButton.onClick.AddListener(delegate { SwitchLanguageButtonHandler(false); });
+            NextLanguageButton.onClick.AddListener(delegate { SwitchLanguageButtonHandler(true); });
         }
 
         // Update is called once physics timestamp
@@ -224,6 +235,13 @@ namespace LastHitPractice
             {
                 muteButton.image.sprite = UnmuteSprite;
             }
+        }
+
+        public void SwitchLanguageButtonHandler(bool isNext)
+        {
+            i18n.NextLanguage(isNext);
+            CurrentLanguageText.text = i18n.__(I18n.CurrentLocale);
+            UpdateText();
         }
     }
 }

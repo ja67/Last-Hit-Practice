@@ -12,9 +12,30 @@ namespace LastHitPractice
 
         private static readonly I18n instance = new I18n();
 
-        private static string[] locales = new string[] { "en-US", "zh-CN", "es-ES" };
+        private static string[] locales = new string[] { "en-US", "zh-CN" };//, "es-ES" };
 
-        private static string _currentLocale = "zh-CN";
+        private static int _currentLocaleIndex = 1;
+
+        private static string _currentLocale = locales[_currentLocaleIndex];
+
+        public static string CurrentLocale {
+            get { return _currentLocale; }
+        }
+
+        public void NextLanguage(bool next)
+        {
+            if (next)
+            {
+                _currentLocaleIndex = (_currentLocaleIndex + 1) % locales.Length;
+            }
+            else
+            {
+                _currentLocaleIndex = (_currentLocaleIndex - 1) % locales.Length;
+            }
+            SetLocale(locales[_currentLocaleIndex]);
+        } 
+
+        public static string[] Locales { get { return locales; } }
 
         private static string _localePath = "Locales/";
 
