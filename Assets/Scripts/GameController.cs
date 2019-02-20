@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 namespace LastHitPractice
@@ -47,6 +48,8 @@ namespace LastHitPractice
         public Text HelpButtonText;
         public Text RestartButtonText;
         public Text QuitButtonText;
+        public Text HelpText;
+        public Text BackButtonText;
 
 
         // Use this for initialization
@@ -62,8 +65,6 @@ namespace LastHitPractice
                 //Destroy this, this enforces our singleton pattern so there can only be one instance of GameController.
                 Destroy(gameObject);
 
-            //Set GameController to DontDestroyOnLoad so that it won't be destroyed when reloading our scene.
-            DontDestroyOnLoad(gameObject);
         }
         void Start()
         {
@@ -86,7 +87,7 @@ namespace LastHitPractice
             MusicControllerSlider.value = 1f;
             SoundControllerSlider.value = 1f;
             MusicControllerSlider.onValueChanged.AddListener(delegate { MusicSoundSliderHandler(SoundManager.Controller.Music, MusicControllerSlider.value); });
-            SoundControllerSlider.onValueChanged.AddListener(delegate { MusicSoundSliderHandler(SoundManager.Controller.Sound,SoundControllerSlider.value); });
+            SoundControllerSlider.onValueChanged.AddListener(delegate { MusicSoundSliderHandler(SoundManager.Controller.Sound, SoundControllerSlider.value); });
             MusicMuteButton.onClick.AddListener(delegate { MusicSoundMuteButtonHandler(SoundManager.Controller.Music); });
             SoundMuteButton.onClick.AddListener(delegate { MusicSoundMuteButtonHandler(SoundManager.Controller.Sound); });
         }
@@ -137,9 +138,10 @@ namespace LastHitPractice
             Text[] textArray = {
                 GameOverText, HitText, LanguageText,
                 MusicControllerText, SoundControllerText,
-                HelpButtonText, RestartButtonText, QuitButtonText
+                HelpButtonText, RestartButtonText, QuitButtonText,
+                HelpText, BackButtonText
             };
-            foreach(Text text in textArray)
+            foreach (Text text in textArray)
             {
                 text.text = i18n.__(Regex.Replace(text.name, "( |Text$)", string.Empty));
             }
@@ -148,7 +150,7 @@ namespace LastHitPractice
 
         private void UpdateDynamicText()
         {
-                TimerText.text = i18n.__("Timer") + Mathf.RoundToInt(timeLeft);
+            TimerText.text = i18n.__("Timer") + Mathf.RoundToInt(timeLeft);
         }
 
 
@@ -198,13 +200,13 @@ namespace LastHitPractice
 
         public void MusicSoundSliderHandler(SoundManager.Controller controller, float value)
         {
-            if(controller == SoundManager.Controller.Music)
+            if (controller == SoundManager.Controller.Music)
             {
-                SoundManager.musicSource.volume = value; 
+                SoundManager.musicSource.volume = value;
             }
-            else if(controller == SoundManager.Controller.Sound)
+            else if (controller == SoundManager.Controller.Sound)
             {
-                SoundManager.soundSource.volume = value; 
+                SoundManager.soundSource.volume = value;
             }
         }
 
@@ -213,15 +215,15 @@ namespace LastHitPractice
             AudioSource source = null;
             Slider volumeSlider = null;
             Button muteButton = null;
-            if(controller == SoundManager.Controller.Music)
+            if (controller == SoundManager.Controller.Music)
             {
                 source = SoundManager.musicSource;
                 volumeSlider = MusicControllerSlider;
                 muteButton = MusicMuteButton;
             }
-            else if(controller == SoundManager.Controller.Sound)
+            else if (controller == SoundManager.Controller.Sound)
             {
-                source = SoundManager.soundSource; 
+                source = SoundManager.soundSource;
                 volumeSlider = SoundControllerSlider;
                 muteButton = SoundMuteButton;
             }
@@ -243,5 +245,19 @@ namespace LastHitPractice
             CurrentLanguageText.text = i18n.__(I18n.CurrentLocale);
             UpdateText();
         }
+        public void QuitButtonHandler()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
+        public void RestartButtonHandler()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+
     }
 }
