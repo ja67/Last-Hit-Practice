@@ -11,5 +11,6 @@
 	"Timer": "Time left",
 	"Hit": "Hit",
 	"Help": "This is a naive game simulating last hit mechanism in MOBA games like DOTA and LOL.\n Blue creeps are your allies and red are your enemys.\n Right click to move the charator or attack the enemy.\n Please note that only the hit that kills the enemy counts",
-	"BackButton": "Back"
+	"HelpBackButton": "Back",
+	"PauseBackButton": "Resume"
 }

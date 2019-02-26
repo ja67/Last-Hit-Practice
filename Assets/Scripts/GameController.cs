@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 namespace LastHitPractice
@@ -12,7 +12,7 @@ namespace LastHitPractice
     public class GameController : MonoBehaviour
     {
         [HideInInspector] public Camera cam;
-        [HideInInspector] public SoundManager SoundManager;
+        [HideInInspector] public SoundManager soundManager;
         public GameObject infantry;
         public static GameController instance;
 
@@ -26,6 +26,9 @@ namespace LastHitPractice
 
 
         private const int numOfSpawnCreep = 3;
+
+        public GameObject PausePanel;
+        public GameObject HelpPanel;
 
         public Text CurrentLanguageText;
         public Button PrevLanguageButton;
@@ -49,7 +52,10 @@ namespace LastHitPractice
         public Text RestartButtonText;
         public Text QuitButtonText;
         public Text HelpText;
-        public Text BackButtonText;
+        public Text HelpBackButtonText;
+        public Text PauseBackButtonText;
+
+        public Button SettingButton;
 
 
         // Use this for initialization
@@ -72,9 +78,11 @@ namespace LastHitPractice
             {
                 cam = Camera.main;
             }
+            timeLeft = 10f;
             friendlyObjectList = new List<GameObject>();
             enemyObjectList = new List<GameObject>();
             i18n = I18n.Instance;
+            soundManager = SoundManager.Instance;
             InitLanguageController();
             InitMusicSoundController();
             StartCoroutine(Spawn());
@@ -105,6 +113,8 @@ namespace LastHitPractice
             if (timeLeft < 0)
             {
                 timeLeft = 0;
+                GameOverText.gameObject.SetActive(true);
+                PauseGame();
             }
             UpdateDynamicText();
             foreach (GameObject friend in friendlyObjectList)
@@ -139,7 +149,7 @@ namespace LastHitPractice
                 GameOverText, HitText, LanguageText,
                 MusicControllerText, SoundControllerText,
                 HelpButtonText, RestartButtonText, QuitButtonText,
-                HelpText, BackButtonText
+                HelpText, HelpBackButtonText, PauseBackButtonText
             };
             foreach (Text text in textArray)
             {
@@ -166,8 +176,16 @@ namespace LastHitPractice
         // Update is called once per frame
         void Update()
         {
-
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButton(0))
+            {
+                GameObject[] panelList = { HelpPanel, PausePanel };
+                foreach (GameObject panel in panelList)
+                {
+                    HideIfClickedOutside(panel);
+                }
+            }
+            //When right button is clicked 
+            else if (Input.GetMouseButtonDown(1))
             {
                 Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -182,8 +200,21 @@ namespace LastHitPractice
                     player.targetPosition = mousePos;
                 }
             }
-        }
 
+        }
+        private void HideIfClickedOutside(GameObject panel)
+        {
+            if (panel.activeSelf &&
+                !RectTransformUtility.RectangleContainsScreenPoint(
+                    panel.GetComponent<RectTransform>(),
+                    Input.mousePosition,
+                    Camera.main))
+            {
+                panel.SetActive(false);
+                SettingButton.enabled = true;
+                ContinueGame();
+            }
+        }
         IEnumerator Spawn()
         {
             for (int i = 0; i < numOfSpawnCreep; i++)
@@ -202,11 +233,11 @@ namespace LastHitPractice
         {
             if (controller == SoundManager.Controller.Music)
             {
-                SoundManager.musicSource.volume = value;
+                soundManager.musicSource.volume = value;
             }
             else if (controller == SoundManager.Controller.Sound)
             {
-                SoundManager.soundSource.volume = value;
+                soundManager.soundSource.volume = value;
             }
         }
 
@@ -217,13 +248,13 @@ namespace LastHitPractice
             Button muteButton = null;
             if (controller == SoundManager.Controller.Music)
             {
-                source = SoundManager.musicSource;
+                source = soundManager.musicSource;
                 volumeSlider = MusicControllerSlider;
                 muteButton = MusicMuteButton;
             }
             else if (controller == SoundManager.Controller.Sound)
             {
-                source = SoundManager.soundSource;
+                source = soundManager.soundSource;
                 volumeSlider = SoundControllerSlider;
                 muteButton = SoundMuteButton;
             }
@@ -257,7 +288,16 @@ namespace LastHitPractice
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
-
+        public void PauseGame()
+        {
+            Time.timeScale = 0;
+            //Disable scripts that still work while timescale is set to 0
+        }
+        public void ContinueGame()
+        {
+            Time.timeScale = 1;
+            //enable the scripts again
+        }
 
     }
 }

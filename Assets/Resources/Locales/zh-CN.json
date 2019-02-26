@@ -11,5 +11,6 @@
 	"Timer": "剩余时间",
 	"Hit": "补刀数",
 	"Help": "一个模仿MOBA游戏（DOTA和LOL）里补兵操作的naive小游戏。\n 蓝色是友军，红色是敌军\n 鼠标右键控制人物移动和攻击.\n 注意只有通过最后一击杀死敌人计算分数",
-	"BackButton": "返回"
+	"HelpBackButton": "返回",
+	"PauseBackButton": "返回游戏"
 }
