@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using LastHitPractice;
+
 public class PhysicsObject : MonoBehaviour
 {
 
@@ -188,7 +190,7 @@ public class PhysicsObject : MonoBehaviour
         float attackMoment = 1f / attackFrequency;
         if (attackDuration > attackMoment)
         {
-            gameController.SoundManager.efxSource.Play();
+            gameController.soundManager.soundSource.Play();
             myAnimator.PlayInFixedTime("Attack", -1, 1f / attackFrequency);
             AttackAction();
             attackDuration = 0f;

@@ -1,0 +1,16 @@
+﻿{
+	"Language":"语言",
+	"zh-CN": "中文",
+	"en-US": "English",
+	"MusicController": "音乐",
+	"SoundController": "音效",
+	"HelpButton": "帮助",
+	"RestartButton": "重新开始",
+	"QuitButton": "退出",
+	"GameOver": "游戏结束",
+	"Timer": "剩余时间",
+	"Hit": "补刀数",
+	"Help": "一个模仿MOBA游戏（DOTA和LOL）里补兵操作的naive小游戏。\n 蓝色是友军，红色是敌军\n 鼠标右键控制人物移动和攻击.\n 注意只有通过最后一击杀死敌人计算分数",
+	"HelpBackButton": "返回",
+	"PauseBackButton": "返回游戏"
+}
