@@ -70,7 +70,6 @@ namespace LastHitPractice
             else if (instance != this)
                 //Destroy this, this enforces our singleton pattern so there can only be one instance of GameController.
                 Destroy(gameObject);
-
         }
         void Start()
         {
@@ -287,6 +286,7 @@ namespace LastHitPractice
         public void RestartButtonHandler()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            ContinueGame();
         }
         public void PauseGame()
         {

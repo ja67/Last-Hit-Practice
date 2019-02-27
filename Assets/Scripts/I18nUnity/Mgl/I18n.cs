@@ -1,8 +1,8 @@
 ﻿using Lib.SimpleJSON;
 using System;
-using UnityEngine;
-using System.Text;
 using System.Linq;
+using System.Text;
+using UnityEngine;
 
 namespace LastHitPractice
 {
@@ -16,11 +16,9 @@ namespace LastHitPractice
 
         private static int _currentLocaleIndex = 1;
 
-        private static string _currentLocale = locales[_currentLocaleIndex];
+        private static string _currentLocale;
 
-        public static string CurrentLocale {
-            get { return _currentLocale; }
-        }
+        public static string CurrentLocale => _currentLocale;
 
         public void NextLanguage(bool next)
         {
@@ -33,9 +31,9 @@ namespace LastHitPractice
                 _currentLocaleIndex = (_currentLocaleIndex - 1) % locales.Length;
             }
             SetLocale(locales[_currentLocaleIndex]);
-        } 
+        }
 
-        public static string[] Locales { get { return locales; } }
+        public static string[] Locales => locales;
 
         private static string _localePath = "Locales/";
 
@@ -43,20 +41,16 @@ namespace LastHitPractice
 
         static I18n()
         {
-           
+
+            TextAsset configText = Resources.Load("config") as TextAsset;
+            _currentLocale = JSON.Parse(configText.text)["language"];
         }
 
         private I18n()
         {
         }
 
-        public static I18n Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        public static I18n Instance => instance;
 
         static void InitConfig()
         {
@@ -66,6 +60,7 @@ namespace LastHitPractice
                 // Read the file as one string.
                 TextAsset configText = Resources.Load(localConfigPath) as TextAsset;
                 config = JSON.Parse(configText.text);
+                _currentLocaleIndex = Array.IndexOf(Locales, _currentLocale);
             }
             else if (_isLoggingMissing)
             {
@@ -186,12 +181,12 @@ namespace LastHitPractice
             return argOne;
         }
 
-        bool IsNumeric(System.Object Expression)
+        bool IsNumeric(object Expression)
         {
             if (Expression == null || Expression is DateTime)
                 return false;
 
-            if (Expression is Int16 || Expression is Int32 || Expression is Int64 || Expression is Decimal || Expression is Single || Expression is Double || Expression is Boolean)
+            if (Expression is short || Expression is int || Expression is long || Expression is decimal || Expression is float || Expression is double || Expression is bool)
                 return true;
 
             return false;
