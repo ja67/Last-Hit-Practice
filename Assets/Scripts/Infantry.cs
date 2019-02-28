@@ -46,6 +46,8 @@ public class Infantry : PhysicsObject
 
         hpBar = GetComponentInChildren<Slider>();
         hpBar.transform.localPosition = new Vector2(0f, objectHeight * 0.8f);
+        attackFrequency = 0.3f;
+        attackPoint = 10f;
     }
     // Use this for initialization
     new void Start()

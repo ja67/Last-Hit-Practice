@@ -25,8 +25,6 @@ namespace LastHitPractice
         [HideInInspector] public I18n i18n;
 
 
-        private const int numOfSpawnCreep = 3;
-
         public GameObject PausePanel;
         public GameObject HelpPanel;
 
@@ -77,14 +75,15 @@ namespace LastHitPractice
             {
                 cam = Camera.main;
             }
-            timeLeft = 10f;
+            timeLeft = 120f;
             friendlyObjectList = new List<GameObject>();
             enemyObjectList = new List<GameObject>();
             i18n = I18n.Instance;
             soundManager = SoundManager.Instance;
             InitLanguageController();
             InitMusicSoundController();
-            StartCoroutine(Spawn());
+            StartCoroutine(Spawn(3, 1));
+            StartCoroutine(Spawn(3, 2));
             UpdateText();
             CurrentLanguageText.text = i18n.__(I18n.CurrentLocale);
         }
@@ -112,40 +111,35 @@ namespace LastHitPractice
             if (timeLeft < 0)
             {
                 timeLeft = 0;
+                GameOverText.text = GameOverText.text + "\n" + HitText.text;
                 GameOverText.gameObject.SetActive(true);
                 PauseGame();
             }
             UpdateDynamicText();
             foreach (GameObject friend in friendlyObjectList)
             {
-                Dictionary<GameObject, int> friendAggroMap = friend.GetComponent<Infantry>().AggroMap;
-                foreach (GameObject enemy in enemyObjectList)
-                {
-                    Dictionary<GameObject, int> enemyAggroMap = enemy.GetComponent<Infantry>().AggroMap;
-                    if (!friendAggroMap.ContainsKey(enemy))
-                    {
-                        int initAggro = Mathf.RoundToInt(Mathf.Abs((enemy.gameObject.transform.position - friend.gameObject.transform.position).magnitude));
-                        friendAggroMap[enemy] = initAggro;
-                        enemyAggroMap[friend] = initAggro;
-                    }
-                }
-            }
-            foreach (GameObject friend in friendlyObjectList)
-            {
                 Infantry friendInfantry = friend.GetComponent<Infantry>();
-                friendInfantry.targetEnemy = friendInfantry.AggroMap.FirstOrDefault(x => x.Value == friendInfantry.AggroMap.Values.Max()).Key;
+                friendInfantry.targetEnemy = friendInfantry.AggroMap.FirstOrDefault(x => x.Value == friendInfantry.AggroMap.Values.Min()).Key;
             }
             foreach (GameObject enemy in enemyObjectList)
             {
                 Infantry enemyInfantry = enemy.GetComponent<Infantry>();
-                enemyInfantry.targetEnemy = enemyInfantry.AggroMap.FirstOrDefault(x => x.Value == enemyInfantry.AggroMap.Values.Max()).Key;
+                enemyInfantry.targetEnemy = enemyInfantry.AggroMap.FirstOrDefault(x => x.Value == enemyInfantry.AggroMap.Values.Min()).Key;
+            }
+            if (enemyObjectList.Count == 0)
+            {
+                StartCoroutine(Spawn(Mathf.Max(3, friendlyObjectList.Count), 2));
+            }
+            if (friendlyObjectList.Count == 0)
+            {
+                StartCoroutine(Spawn(3, 1));
             }
         }
 
         private void UpdateText()
         {
             Text[] textArray = {
-                GameOverText, HitText, LanguageText,
+                GameOverText, LanguageText,
                 MusicControllerText, SoundControllerText,
                 HelpButtonText, RestartButtonText, QuitButtonText,
                 HelpText, HelpBackButtonText, PauseBackButtonText
@@ -155,11 +149,13 @@ namespace LastHitPractice
                 text.text = i18n.__(Regex.Replace(text.name, "( |Text$)", string.Empty));
             }
             TimerText.text = i18n.__("Timer") + Mathf.RoundToInt(timeLeft);
+            HitText.text = i18n.__("Hit") + lastHitCount;
         }
 
         private void UpdateDynamicText()
         {
             TimerText.text = i18n.__("Timer") + Mathf.RoundToInt(timeLeft);
+            HitText.text = i18n.__("Hit") + lastHitCount;
         }
 
 
@@ -191,7 +187,16 @@ namespace LastHitPractice
                 RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
                 if (hit.collider != null)
                 {
-                    player.targetEnemy = hit.transform.gameObject;
+                    Infantry hitInfantry = hit.transform.gameObject.GetComponent<Infantry>() as Infantry;
+                    if (hitInfantry && hitInfantry.TeamId == 2)
+                    {
+                        player.targetEnemy = hitInfantry.gameObject;
+                    }
+                    else
+                    {
+                        player.targetEnemy = null;
+                        player.targetPosition = mousePos;
+                    }
                 }
                 else
                 {
@@ -214,16 +219,23 @@ namespace LastHitPractice
                 ContinueGame();
             }
         }
-        IEnumerator Spawn()
+        IEnumerator Spawn(int numOfSpawnCreep, int teamId)
         {
+            // TODO: remove magic number
+            List<GameObject> infantryObjectList = teamId == 1 ? friendlyObjectList : enemyObjectList;
+            List<GameObject> oppositeObjectList = teamId == 1 ? enemyObjectList : friendlyObjectList;
             for (int i = 0; i < numOfSpawnCreep; i++)
             {
-                //Spawn Friendly Creep
-                Vector2 pos = new Vector2(Infantry.xLimit, Random.Range(-Infantry.yLimit, Infantry.yLimit));
-                friendlyObjectList.Add(SpawnSingleCreep(pos, 1).gameObject);
-                //Spawn Enemy Creep
-                pos = new Vector2(-Infantry.xLimit, Random.Range(-Infantry.yLimit, Infantry.yLimit));
-                enemyObjectList.Add(SpawnSingleCreep(pos, 2).gameObject);
+                Vector2 pos = new Vector2(teamId == 1 ? Infantry.xLimit : -Infantry.xLimit, Random.Range(-Infantry.yLimit, Infantry.yLimit));
+                GameObject newInfantry = SpawnSingleCreep(pos, teamId).gameObject;
+                infantryObjectList.Add(newInfantry);
+                Dictionary<GameObject, int> newInfantryAggroMap = newInfantry.GetComponent<Infantry>().AggroMap;
+                foreach (GameObject opposite in oppositeObjectList)
+                {
+                    int initAggro = Mathf.RoundToInt(Mathf.Abs((opposite.transform.position - newInfantry.transform.position).magnitude));
+                    newInfantryAggroMap[opposite] = initAggro;
+                    opposite.GetComponent<Infantry>().AggroMap[newInfantry] = initAggro;
+                }
             }
             yield return new WaitForSeconds(30);
         }

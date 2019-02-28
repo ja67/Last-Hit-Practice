@@ -11,6 +11,7 @@ public class PhysicsObject : MonoBehaviour
     [HideInInspector] public float healthPoint;
     [HideInInspector] public float attackFrequency;
     [HideInInspector] public float attackDuration;
+    [HideInInspector] public float attackPoint;
     protected float maxHealthPoint;
 
     [HideInInspector] public GameController gameController;
@@ -137,9 +138,7 @@ public class PhysicsObject : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject == targetEnemy)
-        {
-        }
+        myAnimator.SetTrigger("Idle");
     }
 
     private bool CalculateHitBuffer(Vector2 velocity)
@@ -203,7 +202,25 @@ public class PhysicsObject : MonoBehaviour
 
     protected virtual void AttackAction()
     {
-
+        Infantry targetCreep = targetEnemy.GetComponent<PhysicsObject>() as Infantry;
+        float afterAttackHp = targetCreep.healthPoint -= attackPoint;
+        if (afterAttackHp <= 0f)
+        {
+            targetEnemy = null;
+            myAnimator.SetTrigger("Idle");
+            if (gameObject.GetComponent<Player>())
+            {
+                gameController.lastHitCount++;
+            }
+        }
+        else
+        {
+            // TODO: Create a defaultdict?
+            if (targetCreep.AggroMap.ContainsKey(gameObject))
+            {
+                targetCreep.AggroMap[gameObject]--;
+            }
+        }
     }
 
 

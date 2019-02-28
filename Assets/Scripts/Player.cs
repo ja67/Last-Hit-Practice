@@ -12,6 +12,7 @@ public class Player : PhysicsObject
         healthPoint = maxHealthPoint;
         targetEnemy = null;
         attackFrequency = 0.5f;
+        attackPoint = 10f;
     }
 
     // Update is called once per frame
@@ -20,28 +21,6 @@ public class Player : PhysicsObject
         if (targetEnemy)
         {
             targetPosition = targetEnemy.GetComponent<Rigidbody2D>().position;
-        }
-    }
-    protected override void AttackAction()
-    {
-        Infantry targetCreep = targetEnemy.GetComponent<PhysicsObject>() as Infantry;
-        float afterAttackHp = targetCreep.healthPoint -= 10;
-        if (afterAttackHp <= 0f)
-        {
-            targetEnemy = null;
-        }
-        else
-        {
-            // TODO: Create a defaultdict?
-            if (targetCreep.AggroMap.ContainsKey(gameObject))
-            {
-                targetCreep.AggroMap[gameObject] += 1;
-            }
-            else
-            {
-                targetCreep.AggroMap[gameObject] = 1;
-
-            }
         }
     }
 }
